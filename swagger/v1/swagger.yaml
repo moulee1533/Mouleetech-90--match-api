@@ -1,0 +1,111 @@
+openapi: 3.0.1
+info:
+  title: Mouleetech 90 Match API
+  version: v1
+  description: Auth + DigiLocker APIs for the 90's Match Flutter app.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, password_confirmation, full_name]
+              properties:
+                email: { type: string }
+                password: { type: string }
+                password_confirmation: { type: string }
+                full_name: { type: string }
+                phone: { type: string }
+      responses:
+        "201":
+          description: Created (JWT is limited until DigiLocker verification)
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        "200":
+          description: OK
+  /api/v1/auth/me:
+    get:
+      tags: [Auth]
+      summary: Current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+  /api/v1/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout (rotates JWT jti)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+  /api/v1/digilocker/authorize:
+    get:
+      tags: [DigiLocker]
+      summary: Start DigiLocker OAuth / mock authorize
+      parameters:
+        - in: query
+          name: user_id
+          schema: { type: integer }
+        - in: query
+          name: registration_token
+          schema: { type: string }
+      responses:
+        "200":
+          description: Authorize URL + state
+  /api/v1/digilocker/callback:
+    get:
+      tags: [DigiLocker]
+      summary: DigiLocker OAuth callback
+      parameters:
+        - in: query
+          name: code
+          schema: { type: string }
+        - in: query
+          name: state
+          schema: { type: string }
+        - in: query
+          name: format
+          schema: { type: string, enum: [json] }
+      responses:
+        "200":
+          description: JSON success when format=json
+        "302":
+          description: Deep-link redirect for Flutter
+  /api/v1/digilocker/status:
+    get:
+      tags: [DigiLocker]
+      summary: Verification status for current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
