@@ -167,11 +167,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_120000) do
     t.bigint "conversation_id", null: false
     t.bigint "sender_id", null: false
     t.text "body", null: false
+    t.datetime "delivered_at"
+    t.datetime "read_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at"
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["sender_id"], name: "index_messages_on_sender_id"
+  end
+
+  create_table "device_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "token", null: false
+    t.string "platform", default: "android", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_device_tokens_on_token", unique: true
+    t.index ["user_id", "platform"], name: "index_device_tokens_on_user_id_and_platform"
+    t.index ["user_id"], name: "index_device_tokens_on_user_id"
   end
 
   create_table "partner_preferences", force: :cascade do |t|
@@ -240,6 +253,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_120000) do
   add_foreign_key "conversation_participants", "conversations"
   add_foreign_key "conversation_participants", "users"
   add_foreign_key "conversations", "interests"
+  add_foreign_key "device_tokens", "users"
   add_foreign_key "digilocker_sessions", "users"
   add_foreign_key "family_details", "users"
   add_foreign_key "interests", "users", column: "from_user_id"

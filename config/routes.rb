@@ -29,6 +29,11 @@ Rails.application.routes.draw do
       get "conversations", to: "conversations#index"
       get "conversations/:id/messages", to: "conversations#messages"
       post "conversations/:id/messages", to: "conversations#create_message"
+      post "conversations/:id/delivered", to: "conversations#delivered"
+      post "conversations/:id/read", to: "conversations#read"
+
+      post "device_tokens", to: "device_tokens#create"
+      delete "device_tokens", to: "device_tokens#destroy"
 
       get "profiles/search", to: "profiles#search"
       get "profiles/:id", to: "profiles#public_show"

@@ -13,6 +13,7 @@ class User < ApplicationRecord
   has_one :location_detail, dependent: :destroy
   has_one :partner_preference, dependent: :destroy
 
+  has_many :device_tokens, dependent: :destroy
   has_many :sent_interests, class_name: "Interest", foreign_key: :from_user_id, dependent: :destroy,
                             inverse_of: :from_user
   has_many :received_interests, class_name: "Interest", foreign_key: :to_user_id, dependent: :destroy,

@@ -21,6 +21,16 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
+  # JWT-authenticated Flutter clients do not send a trusted browser Origin, so
+  # Action Cable must not reject the WebSocket upgrade on CSRF origin checks.
+  config.action_cable.disable_request_forgery_protection = true
+  config.action_cable.allowed_request_origins = [
+    /http:\/\/13\.127\.44\.215(:\d+)?/,
+    /http:\/\/localhost.*/,
+    /https?:\/\/.*\.ngrok-free\.dev/,
+    /https?:\/\/.*\.ngrok\.io/
+  ]
+
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true
 
