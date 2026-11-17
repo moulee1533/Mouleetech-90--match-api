@@ -31,7 +31,7 @@ class User < ApplicationRecord
   has_many :reports_received, class_name: "Report", foreign_key: :reported_user_id, dependent: :destroy,
                               inverse_of: :reported_user
 
-  ONLINE_WINDOW = 5.minutes
+  ONLINE_WINDOW = 15.minutes
 
   def online?
     last_seen_at.present? && last_seen_at >= ONLINE_WINDOW.ago
@@ -39,7 +39,7 @@ class User < ApplicationRecord
 
   def touch_last_seen!
     # Avoid write storms: throttle presence updates.
-    return if last_seen_at.present? && last_seen_at > 60.seconds.ago
+    return if last_seen_at.present? && last_seen_at > 45.seconds.ago
 
     update_column(:last_seen_at, Time.current)
   end
