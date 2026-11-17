@@ -23,7 +23,7 @@ module Api
           },
           todays_matches: {
             count: preview.size,
-            profiles: preview.map { |u| MemberCardSerializer.call(u) }
+            profiles: preview.map { |u| MemberCardSerializer.call(u, viewer: current_user) }
           }
         }
       end

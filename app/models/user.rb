@@ -22,6 +22,28 @@ class User < ApplicationRecord
   has_many :conversations, through: :conversation_participants
   has_many :messages, foreign_key: :sender_id, dependent: :destroy, inverse_of: :sender
 
+  has_many :shortlists, dependent: :destroy
+  has_many :shortlisted_users, through: :shortlists, source: :target_user
+  has_many :profile_passes, dependent: :destroy
+  has_many :passed_users, through: :profile_passes, source: :passed_user
+  has_many :reports_filed, class_name: "Report", foreign_key: :reporter_id, dependent: :destroy,
+                           inverse_of: :reporter
+  has_many :reports_received, class_name: "Report", foreign_key: :reported_user_id, dependent: :destroy,
+                              inverse_of: :reported_user
+
+  ONLINE_WINDOW = 5.minutes
+
+  def online?
+    last_seen_at.present? && last_seen_at >= ONLINE_WINDOW.ago
+  end
+
+  def touch_last_seen!
+    # Avoid write storms: throttle presence updates.
+    return if last_seen_at.present? && last_seen_at > 60.seconds.ago
+
+    update_column(:last_seen_at, Time.current)
+  end
+
   has_one_attached :avatar
   has_many_attached :photos
 

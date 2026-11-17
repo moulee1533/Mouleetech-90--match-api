@@ -23,8 +23,22 @@ Rails.application.routes.draw do
       post "interests", to: "interests#create"
       get "interests/received", to: "interests#received"
       get "interests/sent", to: "interests#sent"
+      patch "interests/:id", to: "interests#update"
+      put "interests/:id", to: "interests#update"
       post "interests/:id/accept", to: "interests#accept"
       post "interests/:id/decline", to: "interests#decline"
+
+      post "reports", to: "reports#create"
+
+      get "shortlists", to: "shortlists#index"
+      post "shortlists", to: "shortlists#create"
+      delete "shortlists/:target_user_id", to: "shortlists#destroy"
+
+      post "passes", to: "profile_passes#create"
+      delete "passes/:passed_user_id", to: "profile_passes#destroy"
+
+      get "presence/:user_id", to: "presence#show"
+      post "presence/heartbeat", to: "presence#heartbeat"
 
       get "conversations", to: "conversations#index"
       get "conversations/:id/messages", to: "conversations#messages"

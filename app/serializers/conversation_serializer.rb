@@ -11,7 +11,7 @@ class ConversationSerializer
       interest_id: conversation.interest_id,
       last_message_at: conversation.last_message_at,
       last_message: last && MessageSerializer.call(last),
-      member: other && MemberCardSerializer.call(other),
+      member: other && MemberCardSerializer.call(other, viewer: viewer),
       unread_count: unread_scope.count,
       created_at: conversation.created_at
     }

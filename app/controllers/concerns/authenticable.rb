@@ -24,6 +24,7 @@ module Authenticable
 
     @current_user = user
     @token_payload = payload
+    user.touch_last_seen!
   end
 
   def bearer_token

@@ -1,16 +1,17 @@
 class MemberCardSerializer
   include Rails.application.routes.url_helpers
 
-  def self.call(user)
-    new.call(user)
+  def self.call(user, viewer: nil)
+    new.call(user, viewer: viewer)
   end
 
-  def call(user)
+  def call(user, viewer: nil)
     profile = user.member_profile
     location = user.location_detail
     career = user.career_detail
     family = user.family_detail
     dob = profile&.date_of_birth
+    shortlisted = viewer.present? && viewer.shortlists.exists?(target_user_id: user.id)
 
     {
       id: user.id,
@@ -40,7 +41,10 @@ class MemberCardSerializer
       about_me: profile&.about_me,
       avatar_url: blob_url(user.primary_image),
       photo_urls: photo_urls_for(user),
-      match_score: demo_match_score(user)
+      match_score: demo_match_score(user),
+      online: user.online?,
+      last_seen_at: user.last_seen_at,
+      shortlisted: shortlisted
     }
   end
 

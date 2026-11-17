@@ -11,7 +11,7 @@ module Api
         )
 
         render json: {
-          profiles: records.map { |u| MemberCardSerializer.call(u) },
+          profiles: records.map { |u| MemberCardSerializer.call(u, viewer: current_user) },
           meta: meta
         }
       end

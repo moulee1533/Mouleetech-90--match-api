@@ -11,7 +11,7 @@ class InterestSerializer
       conversation_id: interest.conversation&.id,
       created_at: interest.created_at,
       updated_at: interest.updated_at,
-      member: MemberCardSerializer.call(other)
+      member: MemberCardSerializer.call(other, viewer: viewer)
     }
   end
 end

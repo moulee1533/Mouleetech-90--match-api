@@ -9,12 +9,14 @@ class MemberDirectory
 
   def self.matches_for(current_user, page: 1, per_page: 20)
     scope = completed_scope.where.not(id: current_user.id)
+    scope = exclude_passed(scope, current_user)
     scope = apply_opposite_gender(scope, current_user)
     paginate(scope.order(id: :asc), page: page, per_page: per_page)
   end
 
   def self.search(current_user, filters = {})
     scope = completed_scope.where.not(id: current_user.id)
+    scope = exclude_passed(scope, current_user)
     scope = scope.joins(:member_profile)
 
     if filters[:gender].present?
@@ -65,6 +67,11 @@ class MemberDirectory
     scope.joins(:member_profile).where(member_profiles: { gender: opposite })
   end
 
+  def self.exclude_passed(scope, current_user)
+    passed_ids = current_user.profile_passes.select(:passed_user_id)
+    scope.where.not(id: passed_ids)
+  end
+
   def self.paginate(scope, page:, per_page:)
     page = [ page.to_i, 1 ].max
     per_page = per_page.to_i.clamp(1, 50)
@@ -72,5 +79,5 @@ class MemberDirectory
     records = scope.offset((page - 1) * per_page).limit(per_page).to_a
     [ records, { page: page, per_page: per_page, total: total, total_pages: (total.to_f / per_page).ceil } ]
   end
-  private_class_method :paginate, :apply_opposite_gender
+  private_class_method :paginate, :apply_opposite_gender, :exclude_passed
 end

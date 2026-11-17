@@ -70,7 +70,7 @@ module Api
         )
 
         render json: {
-          profiles: records.map { |u| MemberCardSerializer.call(u) },
+          profiles: records.map { |u| MemberCardSerializer.call(u, viewer: current_user) },
           meta: meta
         }
       end
@@ -81,9 +81,9 @@ module Api
                    .find(params[:id])
 
         render json: {
-          profile: MemberCardSerializer.call(user),
+          profile: MemberCardSerializer.call(user, viewer: current_user),
           detail: ProfileSerializer.call(user),
-          profile_card: MemberCardSerializer.call(user)
+          profile_card: MemberCardSerializer.call(user, viewer: current_user)
         }
       end
 

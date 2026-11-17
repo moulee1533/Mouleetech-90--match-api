@@ -3,13 +3,13 @@ module Api
     class InterestsController < ApplicationController
       before_action :authenticate_user!
       before_action :require_active_user!
-      before_action :set_interest, only: %i[accept decline]
+      before_action :set_interest, only: %i[accept decline update]
 
       def create
         to_user = User.find(params.require(:to_user_id))
         interest = current_user.sent_interests.build(
           to_user: to_user,
-          note: params[:note],
+          note: params[:note].to_s.strip.presence,
           status: "pending"
         )
 
@@ -38,6 +38,26 @@ module Api
         render json: {
           interests: list.map { |i| InterestSerializer.call(i, viewer: current_user) }
         }
+      end
+
+      # Allow sender to attach/update greeting note while still pending.
+      def update
+        unless @interest.from_user_id == current_user.id
+          return render json: { error: "Forbidden" }, status: :forbidden
+        end
+        unless @interest.pending?
+          return render json: { error: "Only pending interests can be updated" },
+                        status: :unprocessable_entity
+        end
+
+        note = params[:note].to_s.strip
+        if note.length > 100
+          return render json: { error: "Note must be 100 characters or fewer" },
+                        status: :unprocessable_entity
+        end
+
+        @interest.update!(note: note.presence)
+        render json: { interest: InterestSerializer.call(@interest, viewer: current_user) }
       end
 
       def accept
