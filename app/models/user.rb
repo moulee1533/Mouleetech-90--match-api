@@ -31,7 +31,8 @@ class User < ApplicationRecord
   has_many :reports_received, class_name: "Report", foreign_key: :reported_user_id, dependent: :destroy,
                               inverse_of: :reported_user
 
-  ONLINE_WINDOW = 15.minutes
+  # Instagram-style soft presence: recently active ≈ Active now.
+  ONLINE_WINDOW = 5.minutes
 
   def online?
     last_seen_at.present? && last_seen_at >= ONLINE_WINDOW.ago
